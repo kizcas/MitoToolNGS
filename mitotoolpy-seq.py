@@ -26,6 +26,13 @@ else:
 
 
 def reorder(variantList):
+    """
+    reorder function sorts the variants according to their positions, and returns a list of sorted variants.
+
+    :param variantList: a list of variants
+    :return: a sorted list of variants
+    """
+
     tmp = dict()
     for item in variantList:
         m = re.search(r'^(\d+)', item)
@@ -38,6 +45,15 @@ def reorder(variantList):
 
 
 def removeVariantForSomeRegion(species, variantList):
+    """
+    removeVariantForSomeRegion function filters some variants located at the regions, which are not used during the
+    mtDNA tree building of dog, horse and pig.
+
+    :param species: human and eight domestic animals, only data of dog, horse and pig will be processed.
+    :param variantList: a list of variants
+    :return: a cleaned list of variants
+    """
+
     variantListNew = list()
     if species == "dog":
         for item in variantList:
@@ -68,6 +84,18 @@ def removeVariantForSomeRegion(species, variantList):
 
 
 def removeVariantForNonSelectedRegion(variantList, regionBegin, regionEnd, species, region):
+    """
+    removeVariantForNonSelectedRegion function: when regions were selected to be analyzed, the variants located at
+    outside regions will be deleted.
+
+    :param variantList: a list of variants
+    :param regionBegin: begin position of optional region
+    :param regionEnd: end position of optional region
+    :param species: human and eight domestic animals
+    :param region: this especially designed for the dloop region of cattle
+    :return: a cleaned list of variants
+    """
+
     variantListNew = list()
     if region == "dloop" and species == "cattle":
         for item in variantList:
@@ -108,6 +136,15 @@ def removeVariantForNonSelectedRegion(variantList, regionBegin, regionEnd, speci
 
 
 def manualModifyVariant(species, variantList):
+    """
+    manualModifyVariant function: sequence alignment of ClustalW generates some wrongly-recorded variants,
+    after manual checking, we modify them for improving the accuracy of haplogrouping.
+
+    :param species: human and eight domestic animals
+    :param variantList: a list of variants
+    :return: a manually modified list of variants
+    """
+
     variantNeedModify = {"cattle": [["215+TCC"], ["16200", "16200+A"], ["12171-12173d"]],
                          "chicken": [["3941d"], ["3940-3941d"]], "dog": [["15911d"], ["796+T"], ["16019+TGTAGCTGGAC"]],
                          "goat": [["177G", "179", "180-181d"]],
@@ -136,6 +173,16 @@ def manualModifyVariant(species, variantList):
 
 
 def runClustalwAndGetVariantSet(exeDir, species, clustalw):
+    """
+    runClustalwAndGetVariantSet function: uses ClustalW to align the input fasta file with reference sequence, then
+    record the variant in a list.
+
+    :param exeDir: this designed for finding the executive path of clustalw
+    :param species: human and eight domestic animals
+    :param clustalw: this designed for finding the correct system-dependent clustalw
+    :return:
+    """
+
     # begin to run clustalw
     p = subprocess.Popen(
         '"' + exeDir + "/bin/" + clustalw + '"' + " -INFILE=" + '"' + exeDir + "/tmp/in" + species + ".fasta" + '"' + " -OUTFILE=" + '"' + exeDir + "/tmp/out" + species + ".fasta" + '"' + " -QUIET",
@@ -241,6 +288,17 @@ def runClustalwAndGetVariantSet(exeDir, species, clustalw):
 
 
 def analyzeSeqInFile(species, inputFile, output, exeDir, region):
+    """
+    analyzeSeqInFile function is the main function used to slice sequence, set basic parameters, utilize
+    runClustalwAndGetVariantSet function to generate variant list, clean this list and perform haplogrouping.
+
+    :param species: human and eight domestic animals
+    :param inputFile: the path of input file
+    :param output: the path of output file or stdout
+    :param exeDir: the executive path of clustalw
+    :param region: the region required to be analyzed
+    :return: None
+    """
     # read reference sequence and reference tree
     refFile = open(exeDir + "/ref/refSeq/" + species + "Ref.fasta", "r")
     refRecord = list(SeqIO.parse(refFile, "fasta"))[0]
@@ -382,7 +440,6 @@ def analyzeSeqInFile(species, inputFile, output, exeDir, region):
             pass
         # end
 
-
         querySet = set()
         if cutRequireTwo and region == "dloop":
             # cattle dloop part1
@@ -468,7 +525,7 @@ def analyzeSeqInFile(species, inputFile, output, exeDir, region):
             print("; ".join(missingOut), end="\t")
             print("; ".join(privateOut), end="\t")
             print(",".join(reorder(list(querySet))), end="\n")
-        # ================
+            # ================
     print("--- Time cost: %d seconds ---" % (time.time() - start_time))
     print("--- Query number: %d ---" % queryNumber)
     queryFile.close()
@@ -570,4 +627,3 @@ print("========= Program running =========")
 
 # python C:\Users\user\Desktop\dometree-tool\mitotoolpy.py -s dog -i C:\Users\user\Desktop\dometree-tool\test\dog.fasta -o C:\Users\user\Desktop\dometree-tool\test\dog_test.txt -r "1:100"
 analyzeSeqInFile(species, inputFile, output, exeDir, region)
-
