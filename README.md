@@ -7,7 +7,7 @@ Author: Long Fan (mitotool@gmail.com)
 ===================================
 ##Introduction
 
-MitoToolNGS written in C++ and running on various operation systems (e.g. Windows, Linux, Mac), is designed for data analysis of mitochondrial DNA of Next generation sequencing. It utilizes [PhyloTree][1] and [DomeTree][2] as the haplogrouping references of mtDNAs of human and domestic animals, respectively.
+MitoToolNGS written in Python and C++ and running on various operation systems (e.g. Windows, Linux, Mac), is designed for data analysis of mitochondrial DNA of Next generation sequencing. It utilizes [PhyloTree][1] and [DomeTree][2] as the haplogrouping references of mtDNAs of human and domestic animals, respectively.
 
 MitoToolNGS is licensed under GPLv3, and under development.
 
